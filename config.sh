@@ -169,25 +169,9 @@ install_app(){
     read TMP
     if [ "$TMP" == "y" ];then
         sed -i '/archlinuxcn/d' /etc/pacman.conf
-        select MIRROR in "USTC" "TUNA" "163";do
-            case $MIRROR in
-                "USTC")
-                    echo -e "[archlinuxcn]\nServer = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
-                    break
-                ;;
-                "TUNA")
-                    echo -e "[archlinuxcn]\nServer = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
-                    break
-                ;;
-                "163")
-                    echo -e "[archlinuxcn]\nServer = http://mirrors.163.com/archlinux-cn/\$arch" >> /etc/pacman.conf
-                    break
-                ;;
-                *)
-                    color red "Error ! Please input the correct num"
-                ;;
-            esac
-        done
+        # 取消包验证，避免秘钥无法更新活更新过慢出错
+        sed -i 's/^SigLevel.*$/SigLevel = Never/g' /etc/pacman.conf
+        echo -e "[archlinuxcn]\nServer = https://mirrors.ustc.edu.cn/archlinuxcn/\$arch" >> /etc/pacman.conf
         pacman -Sy
         pacman -S --noconfirm archlinuxcn-keyring
         pacman -S --noconfirm yaourt
